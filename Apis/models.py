@@ -66,3 +66,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def get_short_name(self):
         return self.nombres or self.email.split('@')[0]
+
+# Modelos para consumo en hotel
+class Employee(models.Model):
+    firstName = models.CharField(max_length=25)
+    lastName = models.CharField(max_length=25)
+    age = models.IntegerField()
+    salary = models.DecimalField(decimal_places=2, max_digits=6)
+
+    created_at = models.DateTimeField(auto_now_add=True)
