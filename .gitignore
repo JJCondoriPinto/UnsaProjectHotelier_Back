@@ -2,6 +2,6 @@
 
 venv
 
-./Apis/__pycache__
-./Apis/migrations/__pycache__
+Apis/__pycache__
+Apis/migrations/__pycache__
 FastBooking/__pycache__
