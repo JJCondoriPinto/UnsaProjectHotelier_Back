@@ -6,14 +6,13 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from .serializers import CustomAuthTokenSerializer
 
-# Create your views here.
 # class EmployeeViewSet(viewsets.ModelViewSet):
 #     queryset = Employee.objects.all() # Consulta guardad en un set
 #     permission_classes = [permissions.IsAuthenticated] # Permisos para los objetos del modelo
 #     authentication_classes = [TokenAuthentication]
 #     serializer_class = EmployeeSerializer
 
-
+# Vista AuthToken sobreescrita para validación sobre Token custom
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES

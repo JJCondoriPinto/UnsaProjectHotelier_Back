@@ -100,7 +100,6 @@ class Contenido(models.Model):
     def __str__(self) -> str:
         return self.nombre
 
-
 class Huesped(models.Model):
 
     tipo_identificacion = models.CharField(max_length=20, null=False)
@@ -141,7 +140,7 @@ class Reserva(models.Model):
     ]
 
     # Para saber cuál recepcionista lo realizó
-    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='recepcionista', null=True)
 
     titular = models.ForeignKey(Huesped, on_delete=models.CASCADE)
     cantidad_dias = models.PositiveIntegerField(null=False)
@@ -151,10 +150,9 @@ class Reserva(models.Model):
     fecha_llegada = models.DateTimeField(null=False)
     estado = models.CharField(choices=estados, default='Pendiente', max_length=10)
 
-    Habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
-
 
 class Checkin(models.Model):
 
@@ -164,7 +162,7 @@ class Checkin(models.Model):
     ]
     
     # Para saber cuál recepcionista lo realizó
-    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='recepcionista', null=True)
 
     reserva = models.OneToOneField(Reserva,on_delete=models.CASCADE)
     fecha_entrada = models.DateTimeField(auto_now_add=True, null=False)
@@ -176,7 +174,7 @@ class Checkin(models.Model):
 class Checkout(models.Model):
 
     # Para saber cuál recepcionista lo realizó
-    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='recepcionista', null=True)
 
     checkin = models.OneToOneField(Checkin, on_delete=models.CASCADE)
     fecha_salida = models.DateTimeField(auto_now_add=True, null=False)
