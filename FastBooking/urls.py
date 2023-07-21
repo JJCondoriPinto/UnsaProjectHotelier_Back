@@ -1,5 +1,5 @@
 """
-URL configuration for UnsaHotelBackEnd project.
+URL configuration for FastBooking project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -16,7 +16,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.authtoken import views as viewsAuthToken
 from Apis.views import CustomAuthToken
 
 urlpatterns = [

@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-
 from .models import *
-
 
 # Token customizado para validación de email
 class CustomAuthTokenSerializer(serializers.Serializer):
@@ -45,8 +43,11 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'nombres', 'apellidos', 'dni', 'telefono', 'turno')
+        fields = ('id', 'nombres', 'apellidos',  'dni', 'telefono', 'turno', 'email')
         read_only_fields = ['rol']
+
+    def create_user(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
 class HabitacionSerializer(serializers.ModelSerializer):
     class Meta:

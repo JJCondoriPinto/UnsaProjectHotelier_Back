@@ -22,6 +22,7 @@ class CustomUserManager(UserManager):
     def create_superuser(self, email=None, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('rol', 'gerente')
         return self._create_user(email, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -55,9 +56,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['nombres', 'apellidos', 'dni', 'telefono']
     
     class Meta:
+        db_table = 'administradores'
         verbose_name = 'administrador'
         verbose_name_plural = 'administradores'
     
@@ -84,21 +86,15 @@ class Habitacion(models.Model):
     precio = models.DecimalField(max_digits=6, decimal_places=2, null=False)
     estado = models.CharField(choices=estados, default='Libre', max_length=12)
     tamanio = models.DecimalField(max_digits=4, decimal_places=2)
-    imagen = models.ImageField(upload_to='habitaciones')
+    imagen = models.ImageField(upload_to='habitaciones', null=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
-
-    def __str__(self) -> str:
-        return f"Habitacion Nro {self.nro_habitacion}"
 
 class Contenido(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=False)
     nombre = models.CharField(max_length=100, null=False)
     cantidad = models.PositiveIntegerField(default=1, null=False)
     descripcion = models.CharField(max_length=100, null=True)
-
-    def __str__(self) -> str:
-        return self.nombre
 
 class Huesped(models.Model):
 
@@ -114,7 +110,7 @@ class Huesped(models.Model):
     region = models.CharField(max_length=30)
     telefono = models.PositiveIntegerField()
 
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False,)
 
     # Opcional, si el huesped viaja por motivos de negocio
     ruc_empresa = models.CharField(null=True, max_length=11)
@@ -152,7 +148,7 @@ class Reserva(models.Model):
 
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
 
-    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    created_at = models.DateTimeField(auto_now_add=True, null=False,)
 
 class Checkin(models.Model):
 

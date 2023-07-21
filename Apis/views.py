@@ -1,9 +1,12 @@
-from rest_framework import viewsets, permissions
+from django.http import JsonResponse
+
+from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
@@ -27,15 +30,135 @@ class CustomAuthToken(ObtainAuthToken):
         })
 
 
-# Apis de consumo simple
-class HabitacionesViewSet(viewsets.ModelViewSet):
-    queryset = Habitacion.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
-    serializer_class = HabitacionSerializer
+# Apis de consumo (Gerente)
+class HabitacionesApiView(APIView):
 
-class RecepcionistasViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(rol='recepcionista')
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication]
-    serializer_class = UserSerializer
+
+    def get(self, request, id=None, *args, **kargs):
+        if id is not None:
+            habitacion = Habitacion.objects.get(pk=id)
+            serializer = HabitacionSerializer(habitacion)
+            return Response(serializer.data)
+        else:
+            habitaciones = Habitacion.objects.all()
+            serializer = HabitacionSerializer(habitaciones, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, *args, **kargs):
+        # Validación general
+        data = request.data
+        serializer = HabitacionSerializer(data=data)
+
+        if serializer.is_valid():
+            habitacion = serializer.create(data)
+
+            # Validación e inserción para contenido de habitación
+            if 'contenido' in data:
+                for contenido in data['contenido']:
+                    serializer_content = ContenidoSerializer(data=contenido)
+                    contenido['habitacion_id'] = habitacion.pk
+                    if serializer_content.is_valid():
+                        serializer_content.create(contenido)
+
+            
+            return JsonResponse(data={
+                "message":"Habitación creada correctamente"
+            })
+        else:
+            return Response(serializer.errors)
+            
+
+    def put(self, request, id, *args, **kargs):
+        # Validación general
+        data = request.data
+        habitacion = Habitacion.objects.get(pk=id)
+        serializer = HabitacionSerializer(instance=habitacion, data=data)
+
+        if serializer.is_valid():
+            habitacion = serializer.update(instance=habitacion, validated_data=data)
+
+            # Validación e inserción para contenido de habitación
+            if 'contenido' in data:
+                habitacion.contenido_set.all().delete() # Actualiza contenido
+                for contenido in data['contenido']:
+                    serializer_content = ContenidoSerializer(data=contenido)
+                    contenido['habitacion_id'] = habitacion.pk
+                    if serializer_content.is_valid():
+                        serializer_content.create(contenido)
+
+            
+            return JsonResponse(data={
+                "message":"Habitación actualizada correctamente"
+            })
+        else:
+            return Response(serializer.errors)
+
+    def delete(self, request, id, *args, **kargs):
+        try:
+            Habitacion.objects.get(pk=id).delete()
+            return JsonResponse(data={
+                "message":"Habitación eliminada"
+            })
+        except Exception:
+            return JsonResponse(data={
+                "message":"Error en la eliminación"
+            })
+
+
+class RecepcionistasApiView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, id=None, *args, **kargs):
+        if id is not None:
+            recepcionista = User.objects.get(pk=id, rol='recepcionista')
+            serializer = UserSerializer(recepcionista)
+            return Response(serializer.data)
+        else:
+            recepcionistas = User.objects.filter(rol='recepcionista')
+            serializer = UserSerializer(recepcionistas, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, *args, **kargs):
+        # Validación general
+        data = request.data
+        serializer = UserSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.create_user(data)
+            return JsonResponse(data={
+                "message":"Recepcionista registrado correctamente"
+            })
+        else:
+            return Response(serializer.errors)
+            
+
+    def put(self, request, id, *args, **kargs):
+        # Validación general
+        data = request.data
+        recepcionista = User.objects.get(pk=id)
+        serializer = UserSerializer(instance=recepcionista, data=data)
+
+        if serializer.is_valid():
+            serializer.update(instance=recepcionista, validated_data=data)
+            return JsonResponse(data={
+                "message":"Recepcionista actualizado correctamente"
+            })
+        else:
+            return Response(serializer.errors)
+
+    def delete(self, request, id, *args, **kargs):
+        try:
+            User.objects.get(pk=id).delete()
+            return JsonResponse(data={
+                "message":"Recepcionista eliminado"
+            })
+        except Exception:
+            return JsonResponse(data={
+                "message":"Error en la eliminación"
+            })
+
+# Apis para consumo simple (Recepcionista)
