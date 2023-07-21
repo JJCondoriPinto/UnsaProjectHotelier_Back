@@ -4,11 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import *
 
-# class EmployeeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Employee
-#         fields = ('id', 'firstName', 'lastName', 'age', 'salary', 'created_at')
-#         read_only_fields = ['created_at']
 
 # Token customizado para validación de email
 class CustomAuthTokenSerializer(serializers.Serializer):
@@ -46,6 +41,12 @@ class CustomAuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'nombres', 'apellidos', 'dni', 'telefono', 'turno')
+        read_only_fields = ['rol']
 
 class HabitacionSerializer(serializers.ModelSerializer):
     class Meta:

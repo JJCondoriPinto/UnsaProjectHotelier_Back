@@ -170,7 +170,6 @@ class Checkin(models.Model):
 
     paxx = models.PositiveIntegerField(default=0) # Número de acompañantes
 
-
 class Checkout(models.Model):
 
     # Para saber cuál recepcionista lo realizó

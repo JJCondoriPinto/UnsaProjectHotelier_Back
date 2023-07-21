@@ -4,13 +4,9 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from .serializers import CustomAuthTokenSerializer
+from .serializers import *
+from .models import *
 
-# class EmployeeViewSet(viewsets.ModelViewSet):
-#     queryset = Employee.objects.all() # Consulta guardad en un set
-#     permission_classes = [permissions.IsAuthenticated] # Permisos para los objetos del modelo
-#     authentication_classes = [TokenAuthentication]
-#     serializer_class = EmployeeSerializer
 
 # Vista AuthToken sobreescrita para validación sobre Token custom
 class CustomAuthToken(ObtainAuthToken):
@@ -29,3 +25,17 @@ class CustomAuthToken(ObtainAuthToken):
             'turno': user.turno,
             'rol': user.rol
         })
+
+
+# Apis de consumo simple
+class HabitacionesViewSet(viewsets.ModelViewSet):
+    queryset = Habitacion.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    serializer_class = HabitacionSerializer
+
+class RecepcionistasViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(rol='recepcionista')
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    serializer_class = UserSerializer
