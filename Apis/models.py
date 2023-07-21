@@ -39,8 +39,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(blank=True, default='', unique=True)
     nombres = models.CharField(max_length=255)
     apellidos = models.CharField(max_length=255)
-    dni = models.CharField(max_length=8, unique=True)
-    telefono = models.CharField(max_length=9)
+    dni = models.PositiveIntegerField(unique=True)
+    telefono = models.PositiveIntegerField(unique=True)
     rol = models.CharField(max_length=15, choices=roles, default='recepcionista')
     turno = models.CharField(max_length=15, choices=turnos)
 
@@ -68,10 +68,116 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.nombres or self.email.split('@')[0]
 
 # Modelos para consumo en hotel
-class Employee(models.Model):
-    firstName = models.CharField(max_length=25)
-    lastName = models.CharField(max_length=25)
-    age = models.IntegerField()
-    salary = models.DecimalField(decimal_places=2, max_digits=6)
+class Habitacion(models.Model):
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    estados = [
+        ('Libre', 'Libre'),
+        ('Ocupado', 'Ocupado'),
+        ('Reservado', 'Reservado'),
+        ('Limpieza', 'Limpieza'),
+        ('No operativo', 'NoOperativo'),
+    ]
+
+    nro_habitacion = models.PositiveIntegerField(unique=True, null=False)
+    nro_piso = models.PositiveSmallIntegerField(null=False)
+    tipo_habitacion = models.CharField(null=False, max_length=30)
+    precio = models.DecimalField(max_digits=6, decimal_places=2, null=False)
+    estado = models.CharField(choices=estados, default='Libre', max_length=12)
+    tamanio = models.DecimalField(max_digits=4, decimal_places=2)
+    imagen = models.ImageField(upload_to='habitaciones')
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+
+    def __str__(self) -> str:
+        return f"Habitacion Nro {self.nro_habitacion}"
+
+class Contenido(models.Model):
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=False)
+    nombre = models.CharField(max_length=100, null=False)
+    cantidad = models.PositiveIntegerField(default=1, null=False)
+    descripcion = models.CharField(max_length=100, null=True)
+
+    def __str__(self) -> str:
+        return self.nombre
+
+
+class Huesped(models.Model):
+
+    tipo_identificacion = models.CharField(max_length=20, null=False)
+    identificacion = models.CharField(max_length=20, null=False, unique=True)
+
+    nombres = models.CharField(max_length=50, null=False)
+    apellidos = models.CharField(max_length=50, null=False)
+    sexo = models.CharField(choices=[('Masculino', 'masculino'), ('Femenino', 'femenino')], null=False, max_length=9)
+    fecha_nacimiento = models.DateTimeField(auto_created=False)
+
+    nacionalidad = models.CharField(max_length=20, null=False)
+    region = models.CharField(max_length=30)
+    telefono = models.PositiveIntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+
+    # Opcional, si el huesped viaja por motivos de negocio
+    ruc_empresa = models.CharField(null=True, max_length=11)
+
+class Acompanante(models.Model):
+    titular = models.ForeignKey(Huesped, on_delete=models.CASCADE)
+    nombres = models.CharField(max_length=50)
+    apellidos = models.CharField(max_length=50)
+    sexo = models.CharField(choices=[('Masculino', 'masculino'), ('Femenino', 'femenino')], null=False, max_length=9)
+
+    tipo_identificacion = models.CharField(max_length=20, null=True)
+    identificacion = models.CharField(max_length=20, null=True, unique=True)
+
+    relacion = models.CharField(max_length=50, help_text="Relación con el titular")
+
+class Reserva(models.Model):
+
+    estados = [
+        ('Pendiente', 'pendiente'), # Aún ho hay checkin
+        ('Cancelado', 'cancelado'), 
+        ('Pasado', 'pasado'),  # No llegó el huesped
+        ('Registrado', 'Registrado') # Cuando se realizó el checkin
+    ]
+
+    # Para saber cuál recepcionista lo realizó
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+
+    titular = models.ForeignKey(Huesped, on_delete=models.CASCADE)
+    cantidad_dias = models.PositiveIntegerField(null=False)
+    tipo_reserva = models.CharField(choices=[('Presencial', 'presencial'), ('Virtual', 'virtual')], default='presencial', max_length=15)
+    razon_hospedaje = models.CharField(max_length=50)
+    peticiones = models.TextField(max_length=100)
+    fecha_llegada = models.DateTimeField(null=False)
+    estado = models.CharField(choices=estados, default='Pendiente', max_length=10)
+
+    Habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+
+
+class Checkin(models.Model):
+
+    estados = [
+        ('Activo', 'activo'), # Checkin vigente
+        ('Inactivo', 'inactivo') # Checkout realizado
+    ]
+    
+    # Para saber cuál recepcionista lo realizó
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+
+    reserva = models.OneToOneField(Reserva,on_delete=models.CASCADE)
+    fecha_entrada = models.DateTimeField(auto_now_add=True, null=False)
+    estado = models.CharField(choices=estados, default='Activo', max_length=8)
+
+    paxx = models.PositiveIntegerField(default=0) # Número de acompañantes
+
+
+class Checkout(models.Model):
+
+    # Para saber cuál recepcionista lo realizó
+    recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='id_recepcionista', null=True)
+
+    checkin = models.OneToOneField(Checkin, on_delete=models.CASCADE)
+    fecha_salida = models.DateTimeField(auto_now_add=True, null=False)
+    descripcion_salida = models.CharField(blank=True, null=True, max_length=500)

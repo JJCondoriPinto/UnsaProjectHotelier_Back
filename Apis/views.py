@@ -3,16 +3,15 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from rest_framework.authtoken.models import Token
-from .models import Employee
 from rest_framework.response import Response
-from .serializers import EmployeeSerializer, CustomAuthTokenSerializer
+from .serializers import CustomAuthTokenSerializer
 
 # Create your views here.
-class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.all() # Consulta guardad en un set
-    permission_classes = [permissions.IsAuthenticated] # Permisos para los objetos del modelo
-    authentication_classes = [TokenAuthentication]
-    serializer_class = EmployeeSerializer
+# class EmployeeViewSet(viewsets.ModelViewSet):
+#     queryset = Employee.objects.all() # Consulta guardad en un set
+#     permission_classes = [permissions.IsAuthenticated] # Permisos para los objetos del modelo
+#     authentication_classes = [TokenAuthentication]
+#     serializer_class = EmployeeSerializer
 
 
 class CustomAuthToken(ObtainAuthToken):
