@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
+import json
+
 
 # Vista AuthToken sobreescrita para validación sobre Token custom
 class CustomAuthToken(ObtainAuthToken):
@@ -39,8 +41,11 @@ class HabitacionesApiView(APIView):
     def get(self, request, id=None, *args, **kargs):
         if id is not None:
             habitacion = Habitacion.objects.get(pk=id)
-            serializer = HabitacionSerializer(habitacion)
-            return Response(serializer.data)
+            serializerHabit = HabitacionSerializer(habitacion)
+            serializerConte = ContenidoSerializer(habitacion.contenido_set.all(), many=True)
+            finalData = serializerHabit.data.copy()
+            finalData['contenido'] = serializerConte.data.copy()
+            return Response(finalData)
         else:
             habitaciones = Habitacion.objects.all()
             serializer = HabitacionSerializer(habitaciones, many=True)
@@ -50,7 +55,6 @@ class HabitacionesApiView(APIView):
         # Validación general
         data = request.data
         serializer = HabitacionSerializer(data=data)
-
         if serializer.is_valid():
             habitacion = serializer.create(data)
 
@@ -64,11 +68,17 @@ class HabitacionesApiView(APIView):
 
             
             return JsonResponse(data={
-                "message":"Habitación creada correctamente"
+                "message":"Habitación creada correctamente",
+                "id": habitacion.pk
             })
         else:
-            return Response(serializer.errors)
-            
+            return Response(serializer.errors, status=409)
+    
+    def patch(self, request, id, *args, **kargs):
+        habitacion = Habitacion.objects.get(pk=id)
+        habitacion.imagen = request.data['image']
+        habitacion.save()
+        return Response(status=204)
 
     def put(self, request, id, *args, **kargs):
         # Validación general
@@ -90,10 +100,11 @@ class HabitacionesApiView(APIView):
 
             
             return JsonResponse(data={
-                "message":"Habitación actualizada correctamente"
+                "message":"Habitación actualizada correctamente",
+                "id": habitacion.pk
             })
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=409)
 
     def delete(self, request, id, *args, **kargs):
         try:
@@ -114,9 +125,12 @@ class RecepcionistasApiView(APIView):
 
     def get(self, request, id=None, *args, **kargs):
         if id is not None:
-            recepcionista = User.objects.get(pk=id, rol='recepcionista')
-            serializer = UserSerializer(recepcionista)
-            return Response(serializer.data)
+            try:
+                recepcionista = User.objects.get(pk=id, rol='recepcionista')
+                serializer = UserSerializer(recepcionista)
+                return Response(serializer.data)
+            except Exception:
+                return JsonResponse({"message":"Recepcionista no encontrado"})
         else:
             recepcionistas = User.objects.filter(rol='recepcionista')
             serializer = UserSerializer(recepcionistas, many=True)
@@ -126,14 +140,18 @@ class RecepcionistasApiView(APIView):
         # Validación general
         data = request.data
         serializer = UserSerializer(data=data)
-
-        if serializer.is_valid():
+        validPassword = data['password'] == data['confirmPassword']
+        if serializer.is_valid() and validPassword:
+            del data['confirmPassword']
             serializer.create_user(data)
             return JsonResponse(data={
                 "message":"Recepcionista registrado correctamente"
             })
         else:
-            return Response(serializer.errors)
+            errors = serializer.errors.copy()
+            if not validPassword:
+                errors.setdefault('password', []).append('Contraseñas no coinciden')
+            return Response(errors, status=409)
             
 
     def put(self, request, id, *args, **kargs):
@@ -141,14 +159,21 @@ class RecepcionistasApiView(APIView):
         data = request.data
         recepcionista = User.objects.get(pk=id)
         serializer = UserSerializer(instance=recepcionista, data=data)
-
+        validPassword = data['password'] == data['confirmPassword']
         if serializer.is_valid():
-            serializer.update(instance=recepcionista, validated_data=data)
+            del data['confirmPassword']
+            if data['password'] != '':  # Se actualiza la contraseña
+                serializer.update_user_password(data, id)
+            del data['password']
+            serializer.update(recepcionista, data)
             return JsonResponse(data={
                 "message":"Recepcionista actualizado correctamente"
             })
         else:
-            return Response(serializer.errors)
+            errors = serializer.errors.copy()
+            if not validPassword:
+                errors.setdefault('password', []).append('Contraseñas no coinciden')
+            return Response(errors, status=409)
 
     def delete(self, request, id, *args, **kargs):
         try:

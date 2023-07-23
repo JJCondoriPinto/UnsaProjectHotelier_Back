@@ -75,6 +75,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'FastBooking.wsgi.application'
 
 CORS_ALLOWED_ORIGINS = ['http://localhost:4200']
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

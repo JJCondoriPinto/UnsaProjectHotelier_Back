@@ -47,7 +47,14 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ['rol']
 
     def create_user(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        User.objects.create_user(**validated_data)
+
+    def update_user_password(self, validated_data, id):
+        if 'password' in validated_data:
+            user = User.objects.get(pk=id)
+            user.set_password(validated_data['password'])
+            user.save()
+            
 
 class HabitacionSerializer(serializers.ModelSerializer):
     class Meta:
