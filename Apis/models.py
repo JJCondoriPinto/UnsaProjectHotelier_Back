@@ -97,14 +97,18 @@ class Contenido(models.Model):
     descripcion = models.CharField(max_length=100, null=True)
 
 class Huesped(models.Model):
+    tipos_identificacion = [
+        ('Dni', 'Dni'),
+        ('Carnet_Extranjeria', "Carnet_Extranjeria")
+    ]
 
-    tipo_identificacion = models.CharField(max_length=20, null=False)
+    tipo_identificacion = models.CharField(max_length=20, choices=tipos_identificacion)
     identificacion = models.CharField(max_length=20, null=False, unique=True)
 
     nombres = models.CharField(max_length=50, null=False)
     apellidos = models.CharField(max_length=50, null=False)
     sexo = models.CharField(choices=[('Masculino', 'masculino'), ('Femenino', 'femenino')], null=False, max_length=9)
-    fecha_nacimiento = models.DateTimeField(auto_created=False)
+    fecha_nacimiento = models.DateField(auto_created=False)
 
     nacionalidad = models.CharField(max_length=20, null=False)
     region = models.CharField(max_length=30)

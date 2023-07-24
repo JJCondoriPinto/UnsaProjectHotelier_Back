@@ -76,7 +76,10 @@ class HabitacionesApiView(APIView):
     
     def patch(self, request, id, *args, **kargs):
         habitacion = Habitacion.objects.get(pk=id)
-        habitacion.imagen = request.data['image']
+        if 'imagen' in request.data:
+            habitacion.imagen = request.data['image']
+        if 'estado' in request.data:
+            habitacion.estado = request.data['estado']
         habitacion.save()
         return Response(status=204)
 
@@ -187,3 +190,97 @@ class RecepcionistasApiView(APIView):
             })
 
 # Apis para consumo simple (Recepcionista)
+class HuespedesApiView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, id=None, *args, **kargs):
+
+        if id is not None:
+            huesped = Huesped.objects.get(pk=id)
+            serializer = HuespedSerializer(instance=huesped)
+            return Response(serializer.data)
+        else:
+            huespedes = Huesped.objects.all()
+            serializer = HuespedSerializer(huespedes, many=True)
+            return Response(serializer.data)
+    
+    def post(self, request, *args, **kargs):
+
+        data = request.data
+        serializer = HuespedSerializer(data=data)
+        if serializer.is_valid():
+            serializer.create(validated_data=data)
+            return Response(status=204)
+        else:
+            return Response(serializer.errors, status=409)
+    
+    def delete(self, id, *args, **kargs):
+        
+        try:
+
+            Huesped.objects.get(pk=id).delete()
+            return Response(status=204)
+
+        except Exception:
+
+            return Response("Error en la eliminación", status=409)
+    
+    def put(self, request, id, *args, **kargs):
+        data = request.data
+        huesped = Huesped.objects.get(pk=id)
+        serializer = HuespedSerializer(instance=huesped, data=data)
+        if serializer.is_valid():
+            serializer.update(instance=huesped, validated_data=data)
+            return Response("Huesped actualizado satisfactoriamente" ,status=200)
+        else:
+            return Response(status=409)
+
+class AcompanantesApiView(APIView):
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, idTitular, id=None, *args, **kargs):
+        if id is not None:
+            try:
+                acompanante = Acompanante.objects.get(pk=id, titular_id=idTitular)
+                serializer = AcompananteSerializer(instance=acompanante)
+                return Response(serializer.data)
+            except Exception:
+                return Response(status=404)
+        else: 
+            try:
+                acompanante = Acompanante.objects.filter(titular_id=idTitular)
+                serializer = AcompananteSerializer(instance=acompanante, many=True)
+                return Response(serializer.data)
+            except Exception:
+                return Response(status=404)
+            
+    def post(self, request, idTitular, *args, **kargs):
+
+        data = request.data
+        serializer = AcompananteSerializer(data=data)
+        if serializer.is_valid():
+            serializer.create(validated_data=data)
+            return Response(status=204)
+        else:
+            return Response(serializer.errors, status=409)
+
+    def put(self, request, idTitular, id, *args, **kargs):
+        data = request.data
+        acompanante = Acompanante.objects.get(pk=id, titular_id=idTitular)
+        serializer = AcompananteSerializer(instance=acompanante, data=data)
+        if serializer.is_valid():
+            serializer.update(instance=acompanante, validated_data=data)
+            return Response("Acompañante actualizado satisfactoriamente", status=200)
+        else:
+            return Response(serializer.errors, status=409)
+
+    def delete(self, request, idTitular, id, *args, **kargs):
+        try:
+            Acompanante.objects.get(pk=id, titular_id=idTitular).delete()
+            return Response(status=204)
+        except Exception:
+            return Response("Error en la eliminacion", status=409)
