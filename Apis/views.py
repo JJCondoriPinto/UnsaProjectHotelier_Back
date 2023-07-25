@@ -10,8 +10,6 @@ from rest_framework.views import APIView
 from .serializers import *
 from .models import *
 
-import json
-
 
 # Vista AuthToken sobreescrita para validación sobre Token custom
 class CustomAuthToken(ObtainAuthToken):
