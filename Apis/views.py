@@ -235,7 +235,7 @@ class HuespedesApiView(APIView):
             serializer.update(instance=huesped, validated_data=data)
             return Response("Huesped actualizado satisfactoriamente" ,status=200)
         else:
-            return Response(status=409)
+            return Response(serializer.errors, status=409)
 
 class AcompanantesApiView(APIView):
 

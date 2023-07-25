@@ -89,12 +89,18 @@ class Habitacion(models.Model):
     imagen = models.ImageField(upload_to='habitaciones', null=True)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updatedat = models.DateTimeField(auto_now=True)
+
 
 class Contenido(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=False)
     nombre = models.CharField(max_length=100, null=False)
     cantidad = models.PositiveIntegerField(default=1, null=False)
     descripcion = models.CharField(max_length=100, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 class Huesped(models.Model):
     tipos_identificacion = [
@@ -114,7 +120,8 @@ class Huesped(models.Model):
     region = models.CharField(max_length=30)
     telefono = models.PositiveIntegerField()
 
-    created_at = models.DateTimeField(auto_now_add=True, null=False,)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # Opcional, si el huesped viaja por motivos de negocio
     ruc_empresa = models.CharField(null=True, max_length=11)
@@ -129,6 +136,9 @@ class Acompanante(models.Model):
     identificacion = models.CharField(max_length=20, null=True, unique=True)
 
     relacion = models.CharField(max_length=50, help_text="Relación con el titular")
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Reserva(models.Model):
 
@@ -152,7 +162,8 @@ class Reserva(models.Model):
 
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
 
-    created_at = models.DateTimeField(auto_now_add=True, null=False,)
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class Checkin(models.Model):
 
@@ -170,6 +181,10 @@ class Checkin(models.Model):
 
     paxx = models.PositiveIntegerField(default=0) # Número de acompañantes
 
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class Checkout(models.Model):
 
     # Para saber cuál recepcionista lo realizó
@@ -178,3 +193,7 @@ class Checkout(models.Model):
     checkin = models.OneToOneField(Checkin, on_delete=models.CASCADE)
     fecha_salida = models.DateTimeField(auto_now_add=True, null=False)
     descripcion_salida = models.CharField(blank=True, null=True, max_length=500)
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False)
+    updated_at = models.DateTimeField(auto_now=True)
+

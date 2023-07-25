@@ -44,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'nombres', 'apellidos',  'dni', 'telefono', 'turno', 'email')
-        read_only_fields = ['rol']
+        read_only_fields = ['rol', 'created_at', 'updated_at']
 
     def create_user(self, validated_data):
         User.objects.create_user(**validated_data)
@@ -60,36 +60,40 @@ class HabitacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Habitacion
         fields = ('id', 'nro_habitacion', 'nro_piso', 'tipo_habitacion', 'precio', 'estado', 'tamanio', 'imagen')
-        read_only_fields = ['created_at']
+        read_only_fields = ['created_at', 'updated_at']
 
 class ContenidoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contenido
         fields = ('id', 'habitacion_id', 'nombre', 'cantidad', 'descripcion')
+        read_only_fields = ['created_at', 'updated_at']
     
 class HuespedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Huesped
         fields = ('id', 'tipo_identificacion', 'identificacion', 'nombres', 'apellidos', 'sexo', 'fecha_nacimiento', 'nacionalidad', 'region', 'telefono', 'ruc_empresa')
-        read_only_fields = ['created_at']
+        read_only_fields = ['created_at', 'updated_at']
 
 class AcompananteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Acompanante
         fields = ('id', 'titular_id', 'nombres', 'apellidos', 'sexo', 'tipo_identificacion', 'identificacion', 'relacion')
+        read_only_fields = ['created_at', 'updated_at']
 
 class ReservaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reserva
-        fields = ('id', 'recepcionista_id', 'titular_id', 'cantidad_dias', 'tipo_reserva', 'razon_hospedaje', 'fecha_llegada', 'relacion', 'estado', 'habitacion_id')
-        read_only_fields = ['created_at']
+        fields = ('id', 'recepcionista_id', 'titular_id', 'cantidad_dias', 'tipo_reserva', 'razon_hospedaje', 'fecha_llegada', 'peticiones', 'estado', 'habitacion_id')
+        read_only_fields = ['created_at', 'updated_at']
 
 class CheckinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkin
         fields = ('id', 'recepcionista_id', 'reserva_id', 'fecha_entrada', 'estado', 'paxx')
+        read_only_fields = ['created_at', 'updated_at']
 
 class CheckoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkout
         fields = ('id', 'recepcionista_id', 'checkin_id', 'fecha_salida', 'descripcion_salida')
+        read_only_fields = ['created_at', 'updated_at']
