@@ -95,5 +95,5 @@ class CheckinSerializer(serializers.ModelSerializer):
 class CheckoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkout
-        fields = ('id', 'recepcionista_id', 'checkin_id', 'fecha_salida', 'descripcion_salida')
+        fields = ('id', 'recepcionista_id', 'checkin_id', 'fecha_salida', 'descripcion_salida', 'tarifa')
         read_only_fields = ['created_at', 'updated_at']

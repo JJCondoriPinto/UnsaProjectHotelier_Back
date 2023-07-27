@@ -124,7 +124,7 @@ class Huesped(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     # Opcional, si el huesped viaja por motivos de negocio
-    ruc_empresa = models.CharField(null=True, max_length=11)
+    ruc_empresa = models.CharField(null=True, max_length=11, blank=True)
 
 class Acompanante(models.Model):
     titular = models.ForeignKey(Huesped, on_delete=models.CASCADE)
@@ -145,22 +145,22 @@ class Reserva(models.Model):
     estados = [
         ('Pendiente', 'pendiente'), # Aún ho hay checkin
         ('Cancelado', 'cancelado'), 
-        ('Pasado', 'pasado'),  # No llegó el huesped
+        ('Pasado', 'pasado'),  # Se realizó el checkout
         ('Registrado', 'Registrado') # Cuando se realizó el checkin
     ]
 
     # Para saber cuál recepcionista lo realizó
     recepcionista = models.ForeignKey(User, on_delete=models.SET_NULL, name='recepcionista', null=True)
 
-    titular = models.ForeignKey(Huesped, on_delete=models.CASCADE)
+    titular = models.ForeignKey(Huesped, on_delete=models.CASCADE, null=False)
     cantidad_dias = models.PositiveIntegerField(null=False)
     tipo_reserva = models.CharField(choices=[('Presencial', 'presencial'), ('Virtual', 'virtual')], default='presencial', max_length=15)
     razon_hospedaje = models.CharField(max_length=50)
-    peticiones = models.TextField(max_length=100)
-    fecha_llegada = models.DateTimeField(null=False)
+    peticiones = models.TextField(max_length=100, blank=True, null=True)
+    fecha_llegada = models.DateField(null=False)
     estado = models.CharField(choices=estados, default='Pendiente', max_length=10)
 
-    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE)
+    habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
@@ -193,6 +193,7 @@ class Checkout(models.Model):
     checkin = models.OneToOneField(Checkin, on_delete=models.CASCADE)
     fecha_salida = models.DateTimeField(auto_now_add=True, null=False)
     descripcion_salida = models.CharField(blank=True, null=True, max_length=500)
+    tarifa = models.DecimalField(decimal_places=2, max_digits=7, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
