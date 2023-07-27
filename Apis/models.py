@@ -91,7 +91,6 @@ class Habitacion(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updatedat = models.DateTimeField(auto_now=True)
 
-
 class Contenido(models.Model):
     habitacion = models.ForeignKey(Habitacion, on_delete=models.CASCADE, null=False)
     nombre = models.CharField(max_length=100, null=False)
@@ -100,7 +99,6 @@ class Contenido(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 class Huesped(models.Model):
     tipos_identificacion = [
@@ -183,7 +181,6 @@ class Checkin(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
-
 
 class Checkout(models.Model):
 

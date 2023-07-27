@@ -21,7 +21,6 @@ from Apis.views import CustomAuthToken
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('Apis.urls')),
-    path('api/auth/', include('rest_framework.urls')),
     path('api-token-auth/', CustomAuthToken.as_view())
 ]
 
