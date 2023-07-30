@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.core.exceptions import *
+from django.db.models import Count
 
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
@@ -250,7 +251,10 @@ class HuespedesApiView(APIView):
         serializer = HuespedSerializer(instance=huesped, data=data)
         if serializer.is_valid():
             serializer.update(instance=huesped, validated_data=data)
-            return Response("Huesped actualizado satisfactoriamente" ,status=200)
+            return JsonResponse({
+                'id': huesped.id,
+                'status': 200
+            })
         else:
             return Response(serializer.errors, status=409)
 
@@ -265,15 +269,26 @@ class AcompanantesApiView(APIView):
                 acompanante = Acompanante.objects.get(pk=id, titular_id=idTitular)
                 serializer = AcompananteSerializer(instance=acompanante)
                 return Response(serializer.data)
-            except Exception:
+            except ObjectDoesNotExist:
                 return Response(status=404)
+            except Exception:
+                return Response(status=400)
         else: 
             try:
                 acompanante = Acompanante.objects.filter(titular_id=idTitular)
+                titular = Huesped.objects.get(pk=idTitular)
                 serializer = AcompananteSerializer(instance=acompanante, many=True)
-                return Response(serializer.data)
-            except Exception:
+
+                data = {
+                    "acompanantes": serializer.data,
+                    "estadoTitular": titular.hospedado.real
+                }
+
+                return Response(data)
+            except ObjectDoesNotExist:
                 return Response(status=404)
+            # except Exception:
+            #     return Response(status=400)
             
     def post(self, request, idTitular, *args, **kargs):
 
@@ -486,6 +501,9 @@ class CheckinsApiView(APIView):
             reserva.save()
             habitacion.save()
 
+            huesped.hospedado = True
+            huesped.save()
+
             checkin = Checkin()
             checkin.recepcionista = request.user
             checkin.paxx = paxx
@@ -513,6 +531,10 @@ class CheckinsApiView(APIView):
             reserva = checkin.reserva
             reserva.estado = 'Pendiente'
             reserva.save()
+
+            huesped = reserva.titular
+            huesped.hospedado = False
+            huesped.save()
 
             habitacion = reserva.habitacion
             habitacion.estado = 'Reservado'
@@ -556,6 +578,10 @@ class CheckoutApiView(APIView):
             reserva.estado = 'Pasado'
             reserva.save()
 
+            huesped = reserva.titular
+            huesped.hospedado = False
+            huesped.save()
+
             habitacion = reserva.habitacion
             habitacion.estado = 'Reservado' if habitacion.reserva_set.filter(estado='Pendiente').count() > 1 else 'Libre'
             habitacion.save()
@@ -593,6 +619,10 @@ class CheckoutApiView(APIView):
             checkin.save()
             reserva.save()
 
+            huesped = reserva.titular
+            huesped.hospedado = True
+            huesped.save()
+
             habitacion = reserva.habitacion
             habitacion.estado = 'Ocupado'
             habitacion.save()
@@ -609,3 +639,98 @@ class CheckoutApiView(APIView):
 
             return Response(status=400)
 
+class RemindApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    def get(self, request, id=None, *args, **kargs):
+
+        if id is not None:
+            try:
+                reminds = Remind.objects.get(pk=id)
+                serializer = RemindSerializer(instance=reminds, many=True)
+                return Response(serializer.data)
+            except ObjectDoesNotExist:
+                return Response(status=404)
+        else:
+            reminds = Remind.objects.filter(usuario=request.user)
+            serializer = RemindSerializer(instance=reminds, many=True)
+            return Response(serializer.data)
+        
+    def post(self, request, *args, **kargs):
+        data = request.data
+        data['usuario_id'] = request.user.id
+        serializer = RemindSerializer(data=data)
+        if serializer.is_valid():
+            remind = serializer.create(validated_data=data)
+            data = serializer.data.copy()
+            data['id'] = remind.id
+            return Response(data, status=200)
+        else:
+            return Response(serializer.errors, status=409)
+    
+    def put(self, request, id, *args, **kargs):
+        try:
+            data = request.data
+            remind = Remind.objects.get(pk=id)
+            if remind.usuario != request.user:
+                return Response("Este recordatorio no le pertenece", status=401)
+            serializer = RemindSerializer(instance=remind, data=data)
+            if serializer.is_valid():
+                serializer.update(instance=remind, validated_data=data)
+                return Response(serializer.validated_data, status=200)
+            else:
+                return Response(serializer.errors, status=409)
+        except ObjectDoesNotExist:
+            return Response(status=404)
+    
+    def delete(self, request, id, *args, **kargs):
+        try:
+
+            remind = Remind.objects.get(pk=id)
+            if remind.usuario != request.user:
+                return Response("Este recordatorio no le pertenece", status=401)
+            remind.delete()
+            return Response(status=204)
+
+        except ObjectDoesNotExist:
+            return Response(status=404)
+        
+class ReportApiView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    modelsCount = {
+        'recepcionistas': User.objects.filter(rol='recepcionista'),
+        'habitaciones': Habitacion.objects.all(),
+        'reservas': Reserva.objects.filter(estado='Pendiente')
+    }
+    modelsCountSpecific = {
+        'checkins' : [
+            {
+                'nro_habitacion': habit.nro_habitacion, 
+                'checkins': habit.reserva_set.filter(estado='Registrado').count()
+            } 
+            for habit in Habitacion.objects.all()
+        ],
+        'huespedes' : [
+            {
+                'nacionalidad': item['nacionalidad'],
+                'huespedes': item['count']
+            }
+            for item in Huesped.objects.values('nacionalidad').annotate(count=Count('nacionalidad'))
+        ]
+    }
+
+    def get(self, request, *args, **kargs):
+
+
+        infoData = request.GET.getlist('count', [])
+        data = dict()
+        for info in infoData:
+            data[info] = self.modelsCount[info].count() if info in self.modelsCount else 'Este campo no esta contemplado dentro de los modelos contables'
+
+        infoSpecificData = request.GET.getlist('countSpecific', [])
+        for info in infoSpecificData:
+            data[info] = self.modelsCountSpecific[info] if info in self.modelsCountSpecific else 'Este campo no esta contemplado dentro de los modelos contables'
+
+        return Response(data)

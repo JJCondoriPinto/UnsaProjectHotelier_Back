@@ -118,6 +118,8 @@ class Huesped(models.Model):
     region = models.CharField(max_length=30)
     telefono = models.PositiveIntegerField()
 
+    hospedado = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -195,3 +197,11 @@ class Checkout(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Remind(models.Model):
+
+    titulo = models.CharField(max_length=50, null=False)
+    descripcion = models.CharField(max_length=255, null=False)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

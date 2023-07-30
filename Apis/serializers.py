@@ -97,3 +97,9 @@ class CheckoutSerializer(serializers.ModelSerializer):
         model = Checkout
         fields = ('id', 'recepcionista_id', 'checkin_id', 'fecha_salida', 'descripcion_salida', 'tarifa')
         read_only_fields = ['created_at', 'updated_at']
+
+class RemindSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Remind
+        fields = ('id', 'usuario_id', 'titulo', 'descripcion')
+        read_only_fields = ['created_at', 'updated_at']

@@ -24,4 +24,9 @@ urlpatterns = [
     path('checkouts/', CheckoutApiView.as_view(), name='checkouts'),
     path('checkouts/<int:id>', CheckoutApiView.as_view(), name='checkouts-one'),
 
+    path('reminds/', RemindApiView.as_view(), name='reminds'),
+    path('reminds/<int:id>', RemindApiView.as_view(), name='reminds-one'),
+
+    path('reports/', ReportApiView.as_view(), name='reports')
+
 ]
