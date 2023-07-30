@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.core.exceptions import *
-from django.db.models import Count
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate
 
 from rest_framework import permissions
 from rest_framework.authentication import TokenAuthentication
@@ -378,9 +379,12 @@ class ReservasApiView(APIView):
 
             reserva = Reserva.objects.get(pk=id)
             habitacion = reserva.habitacion
-            if habitacion.reserva_set.filter(estado='Pendiente').count() == 1:
+
+            if habitacion.estado not in ['Ocupado', 'Limpieza', 'NoOperativo'] and habitacion.reserva_set.filter(estado='Pendiente').count() == 1:
                 habitacion.estado = 'Libre'
-                habitacion.save()
+
+            habitacion.save()
+            reserva.delete()
 
             return Response(status=204)
 
@@ -420,7 +424,7 @@ class ReservasApiView(APIView):
             
             serializer.update(instance=reservaActual, validated_data=data)
 
-            if habitacionActual != habitacion and habitacionActual.reserva_set.filter(estado='Pendiente').count() == 1:
+            if habitacionActual != habitacion and habitacion.estado not in ['Ocupado', 'Limpieza', 'NoOperativo'] and habitacionActual.reserva_set.filter(estado='Pendiente').count() == 1:
                 habitacionActual.estado = 'Libre'
                 habitacionActual.save()
 
@@ -583,7 +587,7 @@ class CheckoutApiView(APIView):
             huesped.save()
 
             habitacion = reserva.habitacion
-            habitacion.estado = 'Reservado' if habitacion.reserva_set.filter(estado='Pendiente').count() > 1 else 'Libre'
+            habitacion.estado = 'Reservado' if habitacion.reserva_set.filter(estado='Pendiente').count() > 0 else 'Libre'
             habitacion.save()
 
             checkout = Checkout()
@@ -699,38 +703,66 @@ class RemindApiView(APIView):
 class ReportApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [TokenAuthentication]
-    modelsCount = {
-        'recepcionistas': User.objects.filter(rol='recepcionista'),
-        'habitaciones': Habitacion.objects.all(),
-        'reservas': Reserva.objects.filter(estado='Pendiente')
-    }
-    modelsCountSpecific = {
-        'checkins' : [
-            {
-                'nro_habitacion': habit.nro_habitacion, 
-                'checkins': habit.reserva_set.filter(estado='Registrado').count()
-            } 
-            for habit in Habitacion.objects.all()
-        ],
-        'huespedes' : [
-            {
-                'nacionalidad': item['nacionalidad'],
-                'huespedes': item['count']
-            }
-            for item in Huesped.objects.values('nacionalidad').annotate(count=Count('nacionalidad'))
-        ]
-    }
+
+    def get_models_count(self) -> dict:
+        modelsCount = {
+            'recepcionistas': User.objects.filter(rol='recepcionista'),
+            'habitaciones': Habitacion.objects.all(),
+            'reservas': Reserva.objects.filter(estado='Pendiente')
+        }
+        return modelsCount
+    
+    def get_models_specific(self) -> dict:
+        fecha_actual = timezone.now().date()
+
+        modelsCountSpecific = {
+            'checkins' : [
+                {
+                    'nro_habitacion': habit.nro_habitacion, 
+                    'checkins': habit.reserva_set.filter(estado='Pasado').count()
+                } 
+                for habit in Habitacion.objects.all()
+            ],
+            'huespedes' : [
+                {
+                    'nacionalidad': item['nacionalidad'],
+                    'huespedes': item['count']
+                }
+                for item in Huesped.objects.values('nacionalidad').annotate(count=Count('nacionalidad'))
+            ],
+            'ventas': [
+                {
+                    'dia': venta['dia'].weekday(),
+                    'ventas': venta['ventas_totales']
+                }
+                for venta 
+                in Checkout
+                .objects
+                .filter(
+                    created_at__date__gte=fecha_actual - timedelta(days=fecha_actual.weekday()),
+                    created_at__date__lte=fecha_actual - timedelta(days=fecha_actual.weekday()) + timedelta(days=6))
+                .annotate(dia=TruncDate('created_at'))
+                .values('dia')
+                .annotate(ventas_totales=Sum('tarifa'))
+                .order_by('dia') 
+
+            ]
+        }
+
+        return modelsCountSpecific
 
     def get(self, request, *args, **kargs):
 
+        modelsCount = self.get_models_count()
+        modelsCountSpecific = self.get_models_specific()
 
         infoData = request.GET.getlist('count', [])
         data = dict()
         for info in infoData:
-            data[info] = self.modelsCount[info].count() if info in self.modelsCount else 'Este campo no esta contemplado dentro de los modelos contables'
+            data[info] = modelsCount[info].count() if info in modelsCount else 'Este campo no esta contemplado dentro de los modelos contables'
 
         infoSpecificData = request.GET.getlist('countSpecific', [])
         for info in infoSpecificData:
-            data[info] = self.modelsCountSpecific[info] if info in self.modelsCountSpecific else 'Este campo no esta contemplado dentro de los modelos contables'
+            data[info] = modelsCountSpecific[info] if info in modelsCountSpecific else 'Este campo no esta contemplado dentro de los modelos contables'
 
         return Response(data)
