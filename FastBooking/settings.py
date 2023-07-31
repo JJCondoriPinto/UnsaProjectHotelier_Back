@@ -84,9 +84,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fastbooking',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
+        'USER': 'clkrf65ne0009aaqtg7s92byg',
+        'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
+        'HOST': 'clkrf65nl000iqtaa475l76hx',
         'PORT': '3306'
     }
 }
