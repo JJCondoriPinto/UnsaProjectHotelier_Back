@@ -15,11 +15,24 @@ from .models import *
 
 from datetime import datetime, timedelta
 
+class AuthenticateApiView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kargs):
+        print(request.user)
+        print(request.auth)
+        return Response(request.auth != 'None')
+    
+    def post(self, request, *args, **kwargs):
+        request.user.auth_token.delete()
+        return Response(status=200)
+
 # Vista AuthToken sobreescrita para validación sobre Token custom
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
+    
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
