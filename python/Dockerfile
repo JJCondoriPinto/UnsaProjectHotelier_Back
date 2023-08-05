@@ -17,8 +17,5 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
-RUN ls
-RUN pwd
-
 # ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
 # CMD ["gunicorn", "FastBooking.wsgi:application", "--bind 0.0.0.0:8000"]
