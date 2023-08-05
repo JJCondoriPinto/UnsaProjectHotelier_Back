@@ -3,14 +3,12 @@ version: '3'
 services:
   nginx:
       image: nginx:1.13
-      # ports:
-      #   - "80:80"
+      ports:
+        - "8001:80"
       volumes:
         - ./nginx/conf:/etc/nginx/conf.d
       depends_on:
         - python
-      expose:
-        - "80"
 
   # db:
   #     image: mysql:8.0
