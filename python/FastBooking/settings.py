@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pl67qs)l30w)l+hp!)oqw*i%uzra91tbbtgn$0&(sf8rnb#eew'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -74,7 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FastBooking.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:4200']
+CORS_ALLOWED_ORIGINS = ['https://.bjrcode.com']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 # Database
@@ -83,9 +83,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fastbooking',
-        'USER': 'gerente',
-        'PASSWORD': 'password',
-        'HOST': 'db',
+        'USER': 'clkrf65ne0009aaqtg7s92byg',
+        'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
+        'HOST': 'clkrf65nl000iqtaa475l76hx',
         'PORT': '3306'
     }
 }
