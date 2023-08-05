@@ -11,9 +11,6 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /usr/src/app
 COPY . .
 
-COPY entrypoint.sh /usr/src/app/entrypoint.sh
-RUN chmod +x /usr/src/app/entrypoint.sh
-
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
