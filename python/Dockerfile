@@ -16,5 +16,8 @@ RUN chmod +x /usr/src/app/entrypoint.sh
 
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
-    
+
+RUN ls
+RUN pwd
+
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
