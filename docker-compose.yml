@@ -3,34 +3,33 @@ version: '3'
 services:
   nginx:
       image: nginx:1.13
-      # ports:
-      #   - "80:80"
+      ports:
+        - "80:80"
       volumes:
         - ./nginx/conf:/etc/nginx/conf.d
       depends_on:
         - python
 
-  # db: # En caso queramos crear un servicio propio de db al compose
-  #     image: mysql:8.0
-  #     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-  #     ports:
-  #       - "3306:3306"
-  #     environment:
-  #       MYSQL_ROOT_PASSWORD: root
-  #       MYSQL_DATABASE: fastbooking
-  #       MYSQL_USER: gerente
-  #       MYSQL_PASSWORD: password
-  #     volumes:
-  #       - ./mysql:/var/lib/mysql
-  #       - ./sql:/docker-entrypoint-initdb.d
+  db:
+      image: mysql:8.0
+      command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      ports:
+        - "3306:3306"
+      environment:
+        MYSQL_ROOT_PASSWORD: root
+        MYSQL_DATABASE: fastbooking
+        MYSQL_USER: gerente
+        MYSQL_PASSWORD: password
+      volumes:
+        - ./mysql:/var/lib/mysql
+        - ./sql:/docker-entrypoint-initdb.d
 
   python:
       build: ./python
-      command: python -m gunicorn FastBooking.wsgi:application --bind 0.0.0.0:8000
-      working_dir: /usr/src/app
+      command: gunicorn FastBooking.wsgi:application --bind 0.0.0.0:8000
       volumes:
         - ./python:/usr/src/app
       ports:
         - "8000:8000"
-      # depends_on:
-      #   - db
+      depends_on:
+        - db
