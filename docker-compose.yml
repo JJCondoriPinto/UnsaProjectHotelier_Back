@@ -26,7 +26,7 @@ services:
 
   python:
       build: ./python
-      command: gunicorn FastBooking.wsgi:application --bind 0.0.0.0:8000
+      # command: gunicorn FastBooking.wsgi:application --bind 0.0.0.0:8000
       volumes:
         - ./python:/usr/src/app
       ports:
