@@ -20,4 +20,5 @@ RUN pip install --upgrade pip \
 RUN ls
 RUN pwd
 
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+# ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+CMD ["gunicorn", "FastBooking.wsgi:application", "--bind 0.0.0.0:8000"]
