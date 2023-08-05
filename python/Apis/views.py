@@ -91,7 +91,8 @@ class HabitacionesApiView(APIView):
     
     def patch(self, request, id, *args, **kargs):
         habitacion = Habitacion.objects.get(pk=id)
-        if 'imagen' in request.data:
+        print(request.data)
+        if 'image' in request.data:
             habitacion.imagen = request.data['image']
         if 'estado' in request.data:
             habitacion.estado = request.data['estado']

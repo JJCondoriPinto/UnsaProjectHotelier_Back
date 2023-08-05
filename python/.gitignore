@@ -2,6 +2,7 @@
 
 venv
 
+__pycache__
 Apis/__pycache__
 Apis/migrations/__pycache__
 Apis/models/__pycache__
