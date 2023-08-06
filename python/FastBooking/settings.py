@@ -74,7 +74,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FastBooking.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = ['https://.bjrcode.com']
+CORS_ALLOWED_ORIGINS = ['https://fastbooking.bjrcode.com']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 import dj_database_url
