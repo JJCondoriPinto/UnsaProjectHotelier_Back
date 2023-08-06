@@ -20,8 +20,6 @@ class AuthenticateApiView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kargs):
-        print(request.user)
-        print(request.auth)
         return Response(request.auth != 'None')
     
     def post(self, request, *args, **kwargs):
@@ -91,7 +89,6 @@ class HabitacionesApiView(APIView):
     
     def patch(self, request, id, *args, **kargs):
         habitacion = Habitacion.objects.get(pk=id)
-        print(request.data)
         if 'image' in request.data:
             habitacion.imagen = request.data['image']
         if 'estado' in request.data:
