@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pl67qs)l30w)l+hp!)oqw*i%uzra91tbbtgn$0&(sf8rnb#eew'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -81,11 +81,11 @@ CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fastbooking',
-        'USER': 'fastbook',
-        'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
-        'HOST': '172.17.0.2',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
         'PORT': '3306'
     }
 }
