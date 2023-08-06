@@ -81,7 +81,7 @@ import dj_database_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='mysql://clkrf65nh000aaaqt33ce74yx:7Cu8TL4KpFS3tturZqT5bphc@clkrf65nl000iqtaa475l76hx:3306/fastbooking',
+        default='mysql://clkrf65ne0009aaqtg7s92byg:gWqzP0up6FYm3P2cUfQRWmkM@clkrf65nl000iqtaa475l76hx:3306/fastbooking',
     )
 }
 
