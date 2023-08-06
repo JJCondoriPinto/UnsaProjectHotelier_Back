@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-pl67qs)l30w)l+hp!)oqw*i%uzra91tbbtgn$0&(sf8rnb#eew
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'fastbooking',
         'USER': 'fastbook',
         'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
-        'HOST': 'db',
+        'HOST': '172.17.0.2',
         'PORT': '3306'
     }
 }
