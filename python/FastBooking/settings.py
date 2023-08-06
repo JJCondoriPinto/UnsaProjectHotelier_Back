@@ -81,11 +81,11 @@ CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fastbooking',
+        'USER': 'fastbook',
+        'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
+        'HOST': 'db',
         'PORT': '3306'
     }
 }
