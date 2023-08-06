@@ -39,7 +39,7 @@ Luego de crear la red podemos iniciar los contenedores, sin embargo, para evitar
 
 ```
 docker run -d -p 3306:3306 --name db --network web -v db_pweb_volume:/var/lib/mysql mysql_pweb
-docker run -d -p 80:80 --name django --network web -v django_pweb_volume:/usr/src/app django_pweb
+docker run -d -p 8000:80 --name django --network web -v django_pweb_volume:/usr/src/app django_pweb
 ```
 
 Esperamos a que el contenedor de mysql termine de iniciar y acepte conexiones, luego de ello creamos el contenedor de django, si lo ejecutó antes puede reiniciarlo hasta que la base de datos esté disponible.
