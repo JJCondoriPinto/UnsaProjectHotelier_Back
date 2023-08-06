@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-pl67qs)l30w)l+hp!)oqw*i%uzra91tbbtgn$0&(sf8rnb#eew
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['api.fastbooking.bjrcode.com']
 
 
 # Application definition
