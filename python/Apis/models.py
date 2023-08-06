@@ -106,7 +106,7 @@ class Huesped(models.Model):
         ('Carnet_Extranjeria', "Carnet_Extranjeria")
     ]
 
-    tipo_identificacion = models.CharField(max_length=20, choices=tipos_identificacion)
+    tipo_identificacion = models.CharField(max_length=20, choices=tipos_identificacion, default='Dni')
     identificacion = models.CharField(max_length=20, null=False, unique=True)
 
     nombres = models.CharField(max_length=50, null=False)

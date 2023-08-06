@@ -14,5 +14,4 @@ COPY . .
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
-# ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
-# CMD ["gunicorn", "FastBooking.wsgi:application", "--bind 0.0.0.0:8000"]
+CMD ["gunicorn", "FastBooking.wsgi:application", "--bind", "0.0.0.0:8000"]
