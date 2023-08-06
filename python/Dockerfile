@@ -11,6 +11,8 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /usr/src/app
 COPY . .
 
+COPY nginx/app_nginx.conf /etc/nginx/sites-available/default
+
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
