@@ -18,8 +18,8 @@ services:
       environment:
         MYSQL_ROOT_PASSWORD: root
         MYSQL_DATABASE: fastbooking
-        MYSQL_USER: gerente
-        MYSQL_PASSWORD: password
+        MYSQL_USER: fastbook
+        MYSQL_PASSWORD: gWqzP0up6FYm3P2cUfQRWmkM
       volumes:
         - ./mysql:/var/lib/mysql
         - ./sql:/docker-entrypoint-initdb.d
