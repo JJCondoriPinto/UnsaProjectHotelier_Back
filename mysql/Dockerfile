@@ -4,7 +4,7 @@ FROM mysql:8.0
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=fastbooking
 ENV MYSQL_USER=fastbook
-ENV MYSQL_PASSWORD=gWqzP0up6FYm3P2cUfQRWmkM
+ENV MYSQL_PASSWORD=g3PqzP0up6FYm0u13pcUfQRFmkM
 
 COPY ./sql /docker-entrypoint-initdb.d
 

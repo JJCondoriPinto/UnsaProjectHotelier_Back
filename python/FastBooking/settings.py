@@ -84,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fastbooking',
         'USER': 'fastbook',
-        'PASSWORD': 'gWqzP0up6FYm3P2cUfQRWmkM',
+        'PASSWORD': 'g3PqzP0up6FYm0u13pcUfQRFmkM',
         'HOST': 'db',
         'PORT': '3306'
     }
