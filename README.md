@@ -43,3 +43,16 @@ docker run -d -p 8000:80 --name django --network web -v django_pweb_volume:/usr/
 ```
 
 Esperamos a que el contenedor de mysql termine de iniciar y acepte conexiones, luego de ello creamos el contenedor de django, si lo ejecutó antes puede reiniciarlo hasta que la base de datos esté disponible.
+
+
+## Ejecución local:
+
+Si no se desea crear un contenedor de Docker, el proyecto puede ser iniciado de manera local, para ello se deben tomar en cuenta las siguientes consideraciones:
+
+-   La base de datos puede mantenerse, en caso se haya creado el contenedor de mysql, solo se tendría que modificar el host a localhost y en el puerto 3306, si no se creó con anterioridad entonces en `settings.py` se deben de colocar los datos de la base de datos local.
+
+-   En caso se haga uso del servidor de nginx, puede ser utilizado el archivo `app_nginx.conv` dentro del directorio `python/nginx`, con la diferencia de que el servidor de backend debería escuchar al host localhost y en el mismo puerto 8000, caso contrario, puede utilizar el servidor de wsgi de django: `python manage.py runserver`
+
+-   Las migraciones se ejecutarían de forma manual, al igual que la creación del superusuario.
+
+-   Para la conexión con el Front End de Angular, será necesario modificar el CORS en `settings.py`, autorizando a localhost y el puerto por defecto de Angular, sea 4200 o, si se utiliza su servidor de nginx, sería en el puerto 80
