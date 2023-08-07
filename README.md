@@ -2,6 +2,20 @@
 
 Para ejecutar la aplicación con Docker, primero debemos de crear la base de datos, seguido deL proyecto de Django, para ello seguimos los siguientes pasos:
 
+## Requirements:
+
+-   asgiref
+-   packaging
+-   Django -> El framework base (importante)
+-   django-cors-headers -> Permite conexión desde otros servidores (importante)
+-   djangorestframework -> Para la elaboración de apis (importante)
+-   gunicorn -> Servidor basado en wsgi (importante)
+-   mysqlclient -> Permite conexión con Mysql
+-   Pillow -> Procesamiento de imágenes
+-   pytz -> Manejo de zonas horarias
+-   sqlparse -> Formato de sentencias SQL
+-   tzdata -> Manejo de zona horaria
+
 ## Mysql:
 
 1. Crear un contenedor de mysql, para ello primero deberás de construir la imagen a partir del Dockerfile, ubícate en el directorio 'mysql':
