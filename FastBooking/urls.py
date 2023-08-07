@@ -16,12 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
+from django.views.generic import RedirectView
 from Apis.views import CustomAuthToken
 from rest_framework import urls
 
 urlpatterns = [
-    path('', redirect(to='admin/', permanent=True)),
+    path('', RedirectView.as_view(url='admin/', permanent=True)),
     path('admin/', admin.site.urls),
     path('api/v2/', include('Apis.urls')),
     path('api/auth', include(urls)),
