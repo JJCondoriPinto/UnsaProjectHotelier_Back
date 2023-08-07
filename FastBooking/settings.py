@@ -77,6 +77,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://api.fastbooking.bjrcode.com'
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://api.fastbooking.bjrcode.com']
+
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 import dj_database_url
