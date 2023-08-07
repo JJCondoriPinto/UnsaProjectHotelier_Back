@@ -23,8 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-pl67qs)l30w)l+hp!)oqw*i%uzra91tbbtgn$0&(sf8rnb#eew'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = ['api.fastbooking.bjrcode.com']
 
 
@@ -74,7 +72,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FastBooking.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = ['https://fastbooking.bjrcode.com']
+CORS_ALLOWED_ORIGINS = [
+    'https://fastbooking.bjrcode.com',
+    'https://api.fastbooking.bjrcode.com'
+]
+
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 
 import dj_database_url
